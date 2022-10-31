@@ -1,12 +1,17 @@
+import os
+
+from dotenv import load_dotenv
 import requests
 from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
 from telegram import ReplyKeyboardMarkup
 
-from token_data import TOKEN
+load_dotenv()
 
-URL = 'https://api.thecatapi.com/v1/images/search'
+SECRET_TOKEN = os.getenv('TOKEN')
 
-updater = Updater(token=TOKEN)
+URL = os.getenv('URL')
+
+updater = Updater(token=SECRET_TOKEN)
 
 
 def get_new_image():
@@ -23,7 +28,7 @@ def new_cat(update, context):
 def wake_up(update, context):
     chat = update.effective_chat
     name = update.message.chat.first_name
-    button = ReplyKeyboardMarkup([['/newcat', 'Котики']], resize_keyboard=True)
+    button = ReplyKeyboardMarkup([['/newcat']], resize_keyboard=True)
     context.bot.send_message(
         chat_id=chat.id,
         text='Привет, {}. Посмотри, какого котика я тебе нашёл'.format(name),
