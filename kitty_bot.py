@@ -29,16 +29,31 @@ def get_new_image():
     random_cat = response[0].get('url')
     return random_cat
 
+def get_new_image_2():
+    try:
+        response = requests.get('https://api.thedogapi.com/v1/images/search')
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к основному API: {error}')
+        new_url = URL
+        response = requests.get(new_url)
+    response = response.json()
+    random_cat = response[0].get('url')
+    return random_cat
+
 
 def new_cat(update, context):
     chat = update.effective_chat
     context.bot.send_photo(chat.id, get_new_image())
 
+def new_dog(update, context):
+    chat = update.effective_chat
+    context.bot.send_photo(chat.id, get_new_image_2())
+
 
 def wake_up(update, context):
     chat = update.effective_chat
     name = update.message.chat.first_name
-    button = ReplyKeyboardMarkup([['/newcat']], resize_keyboard=True)
+    button = ReplyKeyboardMarkup([['/newcat', '/newdog']], resize_keyboard=True)
     context.bot.send_message(
         chat_id=chat.id,
         text='Привет, {}. Посмотри, какого котика я тебе нашёл'.format(name),
@@ -52,6 +67,7 @@ def main():
 
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(CommandHandler('newcat', new_cat))
+    updater.dispatcher.add_handler(CommandHandler('newdog', new_dog))
 
     updater.start_polling()
     updater.idle()
